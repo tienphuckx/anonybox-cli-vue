@@ -23,7 +23,7 @@
 
           <!-- Group ID Field -->
           <div class="mb-4">
-            <label class="block text-purple-700 font-semibold">Group ID</label>
+            <label class="block text-purple-700 font-semibold">Group Code</label>
             <input
               type="text"
               v-model="groupCode"
@@ -113,14 +113,15 @@ export default {
       };
 
       try {
-        // Call the join room service
-        const response = await joinRoomService(payload);
-        console.log("Join room request successful:", response);
-        alert("Join room request sent successfully!");
-      } catch (error) {
-        console.error("Failed to join room:", error);
-        alert("Failed to send join request. Please try again.");
-      }
+      // Call the join room service
+      const response = await joinRoomService(payload);
+      console.log("Join room request successful:", response);
+      // Redirect to the WaitingJoinRoom page on success
+      this.$router.push({ name: "WaitingJoinRoom" });
+    } catch (error) {
+      console.error("Failed to join room:", error);
+      alert("Failed to send join request. Please try again.");
+    }
     },
   },
 };
