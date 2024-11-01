@@ -3,6 +3,7 @@ import LandingPage from '../components/LandingPage.vue';
 import CreateRoom from '../components/CreateRoom.vue';
 import JoinRoom from '../components/JoinRoom.vue';
 import WaitingJoinRoom from "../components/WaitingJoinRoom.vue";
+import ChatRoom from "../components/ChatRoom.vue";
 
 const routes = [
   { path: '/', component: LandingPage },
@@ -12,6 +13,11 @@ const routes = [
     path: "/waiting-join-room",
     name: "WaitingJoinRoom",
     component: WaitingJoinRoom,
+  },
+  {
+    path: "/chat-room",
+    name: "ChatRoom",
+    component: ChatRoom,
   },
 ];
 
