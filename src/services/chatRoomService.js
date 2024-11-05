@@ -2,15 +2,12 @@
 
 const API_BASE_URL = "http://localhost:8080";
 
-/**
- * Fetch the list of contacts for the chat sidebar.
- * @returns {Promise<Array>} A promise that resolves to an array of contact objects.
- */
-export async function fetchListGroups() {
+
+export async function fetchListGroups(userId) {
   try {
-    const response = await fetch(`${API_BASE_URL}/gr/list/13`);
+    const response = await fetch(`${API_BASE_URL}/gr/list/${userId}`);
     if (!response.ok) {
-      throw new Error(`Error fetching contacts: ${response.statusText}`);
+      throw new Error(`Error fetching groups: ${response.statusText}`);
     }
     return await response.json();
   } catch (error) {
@@ -18,6 +15,7 @@ export async function fetchListGroups() {
     return [];
   }
 }
+
 
 /**
  * Fetch the messages for a specific contact.

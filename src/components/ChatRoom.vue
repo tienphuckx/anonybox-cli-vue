@@ -12,7 +12,8 @@
 
         <!-- Messages List -->
         <div v-if="groupDetails" class="messages flex-grow overflow-y-auto p-4">
-            <ChatMessages :groupDetails="groupDetails" :messages="messages" />
+          <!-- Pass currentUserId to ChatMessages component -->
+          <ChatMessages :groupDetails="groupDetails" :messages="messages" :currentUserId="currentUserId" />
         </div>
 
         <!-- Message Input Area -->
@@ -43,6 +44,7 @@
         selectedGroupId: null, // Currently selected group ID
         groupDetails: null, // Details of the selected group
         messages: [], // Messages in the selected group
+        currentUserId: this.$route.query.user_id, // Get user_id from query parameters
       };
     },
     methods: {
@@ -66,13 +68,18 @@
       },
     },
     async created() {
-      // Fetch the list of groups when component is created
-      const response = await fetchListGroups();
-    //   console.log("Fetched list of groups:", response);
+      const userId = this.$route.query.user_id;
+      if (!userId) {
+        console.error("User ID is missing in the query parameters.");
+        return;
+      }
+
+      this.currentUserId = Number(userId); // Ensure currentUserId is a number
+
+      const response = await fetchListGroups(this.currentUserId);
       if (response) {
         this.listGroup = response.list_gr;
       } else {
-        // Handle error
         console.error("Failed to fetch list of groups:", response.error);
       }
     },

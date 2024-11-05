@@ -106,16 +106,11 @@ export default {
             approval_require: this.approvalRequire,
           };
           const response = await createRoomService(payload);
-          console.log("Room created successfully:", response);
-          alert("Room created successfully!");
+          const userId = response.data.gr.user_id;
+          this.$router.push({ path: "/chat-room", query: { user_id: userId } });
         } catch (error) {
-          console.error("Failed to create room:", error);
-
-          // Check if the error message is related to the username being taken
           if (error.message.includes("Username")) {
             this.usernameError = error.message;
-          } else {
-            alert("Failed to create room. Please try again.");
           }
         }
       }
