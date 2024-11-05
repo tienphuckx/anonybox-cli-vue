@@ -1,7 +1,6 @@
 <template>
+  <ChatRoomTool />
   <div class="chatroom-container h-full flex bg-gray-200">
-    <!-- <ChatRoomTool /> -->
-    
     <!-- Sidebar for Chats -->
     <aside class="sidebar w-1/4 bg-white border-r border-gray-300 overflow-y-auto">
       <ChatSidebar :listGroup="listGroup" @selectContact="selectContact" />
@@ -34,7 +33,7 @@ import ChatSidebar from "@/components/ChatSidebar.vue";
 import ChatHeader from "@/components/ChatHeader.vue";
 import ChatMessages from "@/components/ChatMessages.vue";
 import ChatInput from "@/components/ChatInput.vue";
-// import ChatRoomTool from "@/components/chatroom/ChatRoomTool.vue";
+import ChatRoomTool from "@/components/chatroom/ChatRoomTool.vue";
 import { fetchGroupDetails, fetchListGroups, sendMessageToServer } from "@/services/chatRoomService";
 
 export default {
@@ -44,7 +43,7 @@ export default {
     ChatHeader,
     ChatMessages,
     ChatInput,
-    // ChatRoomTool,
+    ChatRoomTool,
   },
   data() {
     return {

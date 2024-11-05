@@ -112,7 +112,7 @@ export default {
           const userId = response.data.gr.user_id;
           const groupId = response.data.gr.group_id;
 
-          console.log(groupId);
+          localStorage.setItem("snip_chat_user_id", userId);
 
           // Navigate to the chat room with the user and group IDs
           this.$router.push({
