@@ -1,89 +1,111 @@
 <template>
-    <div class="chatroom-container h-full flex bg-gray-200">
-      <!-- Sidebar for Chats -->
-      <aside class="sidebar w-1/4 bg-white border-r border-gray-300 overflow-y-auto">
-        <ChatSidebar :listGroup="listGroup" @selectContact="selectContact" />
-      </aside>
-  
-       <!-- Main Chat Area -->
-        <main class="chat-area w-3/4 flex flex-col">
-        <!-- Pass group details to ChatHeader -->
-        <ChatHeader v-if="groupDetails" :groupDetails="groupDetails" />
+  <div class="chatroom-container h-full flex bg-gray-200">
+    <!-- <ChatRoomTool /> -->
+    
+    <!-- Sidebar for Chats -->
+    <aside class="sidebar w-1/4 bg-white border-r border-gray-300 overflow-y-auto">
+      <ChatSidebar :listGroup="listGroup" @selectContact="selectContact" />
+    </aside>
 
-        <!-- Messages List -->
-        <div v-if="groupDetails" class="messages flex-grow overflow-y-auto p-4">
-          <!-- Pass currentUserId to ChatMessages component -->
-          <ChatMessages :groupDetails="groupDetails" :messages="messages" :currentUserId="currentUserId" />
-        </div>
+    <!-- Main Chat Area -->
+    <main class="chat-area w-3/4 flex flex-col">
 
-        <!-- Message Input Area -->
-            <ChatInput v-if="groupDetails" @sendMessage="sendMessage" />
-        </main>
+      <!-- Chat Header -->
+      <ChatHeader v-if="groupDetails" :groupDetails="groupDetails" />
 
-    </div>
-  </template>
-  
-  <script>
-  import ChatSidebar from "@/components/ChatSidebar.vue";
-  import ChatHeader from "@/components/ChatHeader.vue";
-  import ChatMessages from "@/components/ChatMessages.vue";
-  import ChatInput from "@/components/ChatInput.vue";
-  import { fetchGroupDetails, fetchListGroups, sendMessageToServer } from "@/services/chatRoomService";
-  
-  export default {
-    name: "ChatRoom",
-    components: {
-      ChatSidebar,
-      ChatHeader,
-      ChatMessages,
-      ChatInput,
-    },
-    data() {
-      return {
-        listGroup: [], // List of groups fetched from the API
-        selectedGroupId: null, // Currently selected group ID
-        groupDetails: null, // Details of the selected group
-        messages: [], // Messages in the selected group
-        currentUserId: this.$route.query.user_id, // Get user_id from query parameters
-      };
-    },
-    methods: {
-      async selectContact(contact) {
-        this.selectedGroupId = contact.group_id;
-        this.groupDetails = await fetchGroupDetails(this.selectedGroupId);
-        this.messages = [];
-      },
-      async sendMessage(content) {
-        if (content.trim()) {
-          const newMessage = {
-            content,
-            sender: "me",
-            timestamp: new Date(),
-          };
-          this.messages.push(newMessage);
-  
-          // Optionally send the message to the server
-          await sendMessageToServer(this.selectedContact.group_id, content);
-        }
-      },
-    },
-    async created() {
-      const userId = this.$route.query.user_id;
-      if (!userId) {
-        console.error("User ID is missing in the query parameters.");
-        return;
-      }
+      <!-- Messages List -->
+      <div v-if="groupDetails" class="messages flex-grow overflow-y-auto p-4">
+        <ChatMessages :groupDetails="groupDetails" :messages="messages" :currentUserId="currentUserId" />
+      </div>
 
-      this.currentUserId = Number(userId); // Ensure currentUserId is a number
+      <!-- Chat Input Area -->
+      <ChatInput
+        v-if="groupDetails"
+        :currentUserId="currentUserId"
+        :currentGroupId="currentGroupId"
+        @sendMessage="sendMessage"
+      />
+    </main>
+  </div>
+</template>
 
-      const response = await fetchListGroups(this.currentUserId);
-      if (response) {
-        this.listGroup = response.list_gr;
-      } else {
-        console.error("Failed to fetch list of groups:", response.error);
-      }
-    },
-  };
-  </script>
+<script>
+import ChatSidebar from "@/components/ChatSidebar.vue";
+import ChatHeader from "@/components/ChatHeader.vue";
+import ChatMessages from "@/components/ChatMessages.vue";
+import ChatInput from "@/components/ChatInput.vue";
+// import ChatRoomTool from "@/components/chatroom/ChatRoomTool.vue";
+import { fetchGroupDetails, fetchListGroups, sendMessageToServer } from "@/services/chatRoomService";
 
-  
+export default {
+  name: "ChatRoom",
+  components: {
+    ChatSidebar,
+    ChatHeader,
+    ChatMessages,
+    ChatInput,
+    // ChatRoomTool,
+  },
+  data() {
+    return {
+      listGroup: [],
+      groupDetails: null,
+      currentGroupId: null,
+      messages: [],
+      currentUserId: Number(this.$route.query.user_id),
+    };
+  },
+  methods: {
+  async selectContact(group) {
+    console.log("Selected Group:", group); // Check if this logs the selected group object
+    // Update currentGroupId with the selected group ID
+    this.currentGroupId = group.group_id;
+    console.log("Updated currentGroupId:", this.currentGroupId); // Check if currentGroupId is set correctly
+
+    // Fetch group details and set messages for the selected group
+    this.groupDetails = await fetchGroupDetails(this.currentGroupId);
+    this.messages = this.groupDetails.messages || []; // Assume messages are part of groupDetails
+  },
+  async sendMessage(content) {
+    console.log("Current User ID:", this.currentUserId);
+    console.log("Current Group ID:", this.currentGroupId); // Confirm that currentGroupId is set correctly here
+
+    if (!this.currentUserId || !this.currentGroupId) {
+      console.error("User ID or Group ID is missing.");
+      return;
+    }
+
+    const payload = {
+      user_id: this.currentUserId,
+      group_id: this.currentGroupId,
+      content: content,
+      message_type: "text",
+    };
+
+    try {
+      const response = await sendMessageToServer(payload);
+      console.log(response);
+
+      this.messages.push({
+        user_id: this.currentUserId,
+        group_id: this.currentGroupId,
+        content: content,
+        message_type: "text",
+        created_at: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error("Failed to send message:", error);
+    }
+  },
+},
+
+  async created() {
+    const response = await fetchListGroups(this.currentUserId);
+    if (response) {
+      this.listGroup = response.list_gr;
+    } else {
+      console.error("Failed to fetch list of groups:", response.error);
+    }
+  },
+};
+</script>

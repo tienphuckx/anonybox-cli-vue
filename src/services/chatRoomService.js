@@ -3,6 +3,38 @@
 const API_BASE_URL = "http://localhost:8080";
 
 
+// src/services/chatRoomService.js
+export async function sendMessageToServer(payload) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/send-msg`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    // Check if the response is in JSON format
+    const contentType = response.headers.get("content-type");
+    if (!response.ok) {
+      // If the response is not OK, try to read the text
+      const errorText = await response.text();
+      throw new Error(`Error: ${errorText}`);
+    }
+
+    // Parse JSON if the content type is correct
+    if (contentType && contentType.includes("application/json")) {
+      return await response.json();
+    } else {
+      throw new Error("Expected JSON response, but received different format");
+    }
+  } catch (error) {
+    console.error("Error sending message:", error);
+    throw error;
+  }
+}
+
+
 export async function fetchListGroups(userId) {
   try {
     const response = await fetch(`${API_BASE_URL}/gr/list/${userId}`);
@@ -35,30 +67,6 @@ export async function fetchMessages(contactId) {
   }
 }
 
-/**
- * Send a message to a specific contact.
- * @param {string} contactId - The ID of the contact to send the message to.
- * @param {string} content - The content of the message.
- * @returns {Promise<Object>} A promise that resolves to the sent message object.
- */
-export async function sendMessageToServer(contactId, content) {
-  try {
-    const response = await fetch(`${API_BASE_URL}/contacts/${contactId}/messages`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ content }),
-    });
-    if (!response.ok) {
-      throw new Error(`Error sending message: ${response.statusText}`);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-}
 
 export async function fetchGroupDetails(groupId) {
     try {

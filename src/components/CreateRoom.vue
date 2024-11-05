@@ -105,9 +105,21 @@ export default {
             maximum_members: this.maximumMembers,
             approval_require: this.approvalRequire,
           };
+
           const response = await createRoomService(payload);
+
+          // Extract user and group IDs from the response
           const userId = response.data.gr.user_id;
-          this.$router.push({ path: "/chat-room", query: { user_id: userId } });
+          const groupId = response.data.gr.group_id;
+
+          console.log(groupId);
+
+          // Navigate to the chat room with the user and group IDs
+          this.$router.push({
+            path: "/chat-room",
+            query: { user_id: userId, group_id: groupId },
+          });
+
         } catch (error) {
           if (error.message.includes("Username")) {
             this.usernameError = error.message;
