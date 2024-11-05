@@ -110,7 +110,13 @@ export default {
           alert("Room created successfully!");
         } catch (error) {
           console.error("Failed to create room:", error);
-          alert("Failed to create room. Please try again.");
+
+          // Check if the error message is related to the username being taken
+          if (error.message.includes("Username")) {
+            this.usernameError = error.message;
+          } else {
+            alert("Failed to create room. Please try again.");
+          }
         }
       }
     },
