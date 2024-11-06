@@ -21,6 +21,7 @@
           
           <p class="text-sm text-gray-500 flex items-center">
             <!-- Seen icon, adjust style as needed -->
+             <span class="pr-2 text-green-700">{{ group.latest_ms_username }}:</span>
             <span>{{ group.latest_ms_content || "No messages yet" }}</span>
           </p>
         </div>

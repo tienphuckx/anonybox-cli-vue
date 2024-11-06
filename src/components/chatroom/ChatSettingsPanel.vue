@@ -10,13 +10,21 @@
           <div>
             <h3 class="text-lg font-semibold">{{ groupInfo.group_name || 'Group Name' }}</h3>
             <p class="text-gray-500">{{ groupInfo.total_joined_member || 0 }} members</p>
-            <!-- <p class="text-gray-500">
-                Created: {{ groupInfo.created_at ? formatVietnamTime(groupInfo.created_at) : "No created date" }}
-            </p> -->
             <p class="text-gray-500">
                 Expires: {{ groupInfo.expired_at ? formatVietnamTime(groupInfo.expired_at) : "No expiry date" }}
             </p>
+            <p class="text-red-500">
+                ({{ getTimeLeft(groupInfo.expired_at) }})
+            </p>
           </div>
+          
+        </div>
+
+        <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden mt-2">
+            <div class="h-full bg-blue-500 transition-all duration-300"
+                :style="{ width: getProgress(groupInfo.expired_at, groupInfo.created_at) + '%' }"
+            >
+            </div>
         </div>
   
         <div v-if="groupInfo.list_joined_member.length" class="border-t pt-4 space-y-2">
@@ -144,6 +152,24 @@
       await this.fetchGroupDetails();
     },
     methods: {
+        getProgress(utcTime, createdAt) {
+            if (!utcTime || !createdAt) return 0;
+
+            const now = new Date(); // Current time
+            const target = new Date(utcTime); // Expiration time
+            const start = new Date(createdAt); // Start time
+
+            target.setHours(target.getHours() + 7); // Adjust for Vietnam timezone
+            start.setHours(start.getHours() + 7);
+
+            const totalDuration = target - start; // Total time span in ms
+            const elapsedDuration = now - start; // Elapsed time in ms
+
+            if (totalDuration <= 0) return 100; // Avoid division by zero
+
+            const progress = (elapsedDuration / totalDuration) * 100; // Progress in percentage
+            return Math.min(Math.max(progress, 0), 100); // Clamp between 0% and 100%
+        },
         formatVietnamTime(utcTime) {
             try {
                 if (!utcTime) return "Invalid time";
@@ -165,6 +191,21 @@
                 console.error("Error formatting Vietnam time:", error);
                 return "Invalid time";
             }
+        },
+        getTimeLeft(utcTime) {
+            if (!utcTime) return "No time left";
+
+            const now = new Date(); // Current time
+            const target = new Date(utcTime); // Convert UTC string to Date object
+            target.setHours(target.getHours() + 7); // Adjust for Vietnam timezone
+
+            const differenceMs = target - now; // Time difference in milliseconds
+            if (differenceMs <= 0) return "Expired";
+
+            const hours = Math.floor(differenceMs / (1000 * 60 * 60)); // Hours left
+            const minutes = Math.floor((differenceMs % (1000 * 60 * 60)) / (1000 * 60)); // Minutes left
+
+            return `${hours} hours and ${minutes} minutes left`;
         },
         async confirmRemove() {
             console.log("Confirm button clicked, proceeding with removal"); // Debug log
