@@ -5,11 +5,34 @@
       <img src="@/assets/logo.png" alt="Group Avatar" class="w-full h-full object-cover" />
     </div>
 
-    <!-- Group Information -->
-    <div class="flex-grow">
-      <h2 class="font-semibold text-gray-800 text-lg">{{ groupDetails.group_name || 'Group Name' }}</h2>
-      <p class="text-sm text-gray-500">{{ groupDetails.joined_member }} members</p>
+    <div class="flex-grow space-y-2">
+    <!-- Group Name -->
+    <h2 class="font-semibold text-gray-800 text-lg">{{ groupDetails.group_name || 'Group Name' }}</h2>
+    
+    <!-- Members Count -->
+      <div class="flex items-center space-x-2 text-sm">
+        <p class="text-gray-500">
+          <span class="text-green-600 font-medium">{{ groupDetails.joined_member }}</span>
+          <span class="text-gray-500">/</span>
+          <span class="text-gray-500">{{ groupDetails.max_member || '∞' }}</span>
+          <span class="text-gray-500"> members</span>
+        </p>
+        <span v-if="groupDetails.max_member" class="px-2 py-0.5 text-xs text-white bg-blue-500 rounded-full">
+          {{ groupDetails.max_member - groupDetails.joined_member }} slots left
+        </span>
+      </div>
+
+      <!-- Waiting for Approval -->
+      <div v-if="groupDetails.total_waiting_member > 0" class="flex items-center space-x-2 text-sm">
+        <p class="text-gray-500">
+          <span class="text-yellow-600 font-medium">{{ groupDetails.total_waiting_member }}</span>
+          <span class="text-gray-500"> member(s) waiting for approval</span>
+        </p>
+        <i class="fas fa-clock text-yellow-500"></i>
+      </div>
     </div>
+
+
 
     <!-- Header Icons -->
     <div class="flex space-x-3 text-gray-500">
