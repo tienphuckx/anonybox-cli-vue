@@ -27,7 +27,10 @@
             
             <!-- Actions in Second Column (Only visible if the user is the group owner) -->
             <span v-if="isGroupOwner" class="flex space-x-4 justify-end">
-                <button @click="removeMember(member.user_id)" class="text-red-500" title="Remove Member">
+                <button 
+                    @click="confirmRemoveMember(member.user_id, member.username)"
+                    class="text-red-500" 
+                    title="Remove Member">
                 <i class="fas fa-user-slash"></i>
                 </button>
                 <button @click="muteMember(member.user_id)" class="text-yellow-500" title="Mute Member">
@@ -78,12 +81,25 @@
           <p class="text-gray-500">No links shared yet</p>
         </div>
       </div>
+
+
+      <CustomModal
+        v-if="showModal"
+        :title="modalTitle"
+        :message="modalMessage"
+        :type="modalType"
+        @close="showModal = false"
+        @confirm="confirmRemove"
+        />
     </div>
   </template>
   
   <script>
+  import { removeUserFromGroup } from "@/services/chatRoomService";
+  import CustomModal from "@/components/custom/CustomModal.vue";
   export default {
     name: "ChatSettingsPanel",
+    components: { CustomModal },
     props: {
       groupId: {
         type: Number,
@@ -108,6 +124,7 @@
     },
     data() {
       return {
+        showModal: false,
         showAllMembers: false,
         groupInfo: {
           group_name: '',
@@ -122,13 +139,44 @@
       await this.fetchGroupDetails();
     },
     methods: {
-        removeMember(userId) {
-            console.log(`Removing member with ID: ${userId}`);
-            // Implement API call here to remove the member
+        async confirmRemove() {
+            console.log("Confirm button clicked, proceeding with removal"); // Debug log
+            await this.removeMember(this.userIdToRemove);
+        }
+        ,
+        async confirmRemoveMember(userId, userName) {
+            this.userIdToRemove = userId;
+            this.modalTitle = "Confirm Removal";
+            this.modalMessage = `Are you sure you want to remove ${userName} from the group?`;
+            this.modalType = "confirm";
+            this.showModal = true;
+        },
+        async removeMember(userId) {
+            try {
+                const payload = {
+                    gr_id: this.groupId,
+                    gr_owner_id: parseInt(localStorage.getItem("x-user-id"), 10),
+                    rm_user_id: userId
+                };
+                const response = await removeUserFromGroup(payload);
+
+                // Check response code and display the appropriate message
+                if (response.code === 200) {
+                    this.modalTitle = "Success";
+                    this.modalMessage = response.message || "User removed successfully.";
+                    this.modalType = "success";
+                    this.showModal = true;
+                    await this.fetchGroupDetails(); // Refresh member list
+                }
+            } catch (error) {
+                this.modalTitle = "Error";
+                this.modalMessage = `Failed to remove user: ${error.message}`;
+                this.modalType = "error";
+                this.showModal = true;
+            }
         },
         muteMember(userId) {
             console.log(`Muting member with ID: ${userId}`);
-            // Implement API call here to mute the member
         },
         async fetchGroupDetails() {
         try {

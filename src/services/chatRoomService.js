@@ -83,3 +83,29 @@ export async function fetchGroupDetails(groupId) {
       return null;
     }
   }
+
+
+  export async function removeUserFromGroup(payload) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/rm-u-from-gr`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status} ${response.statusText}`);
+      }
+  
+      const data = await response.json();
+  
+      // Return both code and message from the API response
+      return { code: data.res_code, message: data.res_msg || "User removed successfully." };
+    } catch (error) {
+      console.error("Error removing user from group:", error);
+      throw error;
+    }
+  }
+  
