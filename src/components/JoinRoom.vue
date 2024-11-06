@@ -1,6 +1,6 @@
 <template>
   <div class="flex justify-center items-center h-full bg-gradient-to-r from-purple-500 to-blue-500">
-    <div class="bg-white p-12 rounded-lg shadow-lg w-full max-w-2xl flex flex-col md:flex-row items-center">
+    <div class="bg-white p-12 -lg shadow-lg w-full max-w-2xl flex flex-col md:flex-row items-center">
       <!-- Image Section -->
       <!-- <div class="mb-8 md:mb-0 md:mr-8">
         <img src="@/assets/join-gr.png" alt="Join Room" class="w-56 h-56 object-contain" />
@@ -16,7 +16,7 @@
             <input
               type="text"
               v-model="username"
-              class="mt-1 p-3 w-full rounded bg-gray-100 border border-gray-300 focus:outline-none focus:border-purple-500"
+              class="mt-1 p-3 w-full bg-gray-100 border border-gray-300 focus:outline-none focus:border-purple-500"
             />
             <p v-if="errors.username" class="text-red-500 text-sm mt-1">{{ errors.username }}</p>
           </div>
@@ -27,7 +27,7 @@
             <input
               type="text"
               v-model="groupCode"
-              class="mt-1 p-3 w-full rounded bg-gray-100 border border-gray-300 focus:outline-none focus:border-purple-500"
+              class="mt-1 p-3 w-full  bg-gray-100 border border-gray-300 focus:outline-none focus:border-purple-500"
             />
             <p v-if="errors.groupCode" class="text-red-500 text-sm mt-1">{{ errors.groupCode }}</p>
           </div>
@@ -37,7 +37,7 @@
             <label class="block text-purple-700 font-semibold">Message</label>
             <textarea
               v-model="message"
-              class="mt-1 p-3 w-full rounded bg-gray-100 border border-gray-300 focus:outline-none focus:border-purple-500"
+              class="mt-1 p-3 w-full  bg-gray-100 border border-gray-300 focus:outline-none focus:border-purple-500"
               rows="3"
               placeholder="Enter your message here..."
             ></textarea>
@@ -47,7 +47,7 @@
           <!-- Submit Button -->
           <button
             type="submit"
-            class="w-full py-4 mt-4 bg-purple-500 text-white rounded-lg font-semibold hover:bg-purple-600 transition duration-200 text-lg"
+            class="w-full py-4 mt-4 bg-purple-500 text-white -lg font-semibold hover:bg-purple-600 transition duration-200 text-lg"
           >
             Join
           </button>
@@ -114,10 +114,10 @@ export default {
 
       try {
       // Call the join room service
-      const response = await joinRoomService(payload);
+      const response = await joinRoomService(payload, this.$router);
       console.log("Join room request successful:", response);
       // Redirect to the WaitingJoinRoom page on success
-      this.$router.push({ name: "WaitingJoinRoom" });
+      // this.$router.push({ name: "WaitingJoinRoom" });
     } catch (error) {
       console.error("Failed to join room:", error);
       alert("Failed to send join request. Please try again.");

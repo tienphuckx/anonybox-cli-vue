@@ -1,13 +1,13 @@
 <!-- src/components/ChatRoomTool.vue -->
 <template>
-    <div class="chatroom-tool flex justify-end space-x-4 p-4 bg-gray-100 border-b border-gray-300">
+    <div class="chatroom-tool flex justify-end space-x-4 p-2 bg-purple-700 border-b border-gray-300">
       <button @click="createNewRoom" class="icon-button">
         <!-- Icon for Create New Room -->
-        <i class="fas fa-plus-circle text-gray-500 text-2xl"></i>
+        <i class="fas fa-plus-circle text-gray-500 text-xl"></i>
       </button>
       <button @click="joinNewRoom" class="icon-button">
         <!-- Icon for Join Room -->
-        <i class="fas fa-sign-in-alt text-green-700 text-2xl"></i>
+        <i class="fas fa-sign-in-alt text-green-700 text-xl"></i>
       </button>
     </div>
   </template>

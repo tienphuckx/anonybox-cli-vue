@@ -6,16 +6,13 @@
       :key="index"
       :class="['message-item', message.user_id === currentUserId ? 'sent' : 'received']"
     >
-      <!-- Display sender's name and message timestamp for each message -->
       <div class="message-header">
         <span class="message-sender font-semibold">{{ message.user_name }}</span>
         <span class="message-time text-xs text-gray-400 mx-3">{{ formatTime(message.created_at) }}</span>
       </div>
 
-      <!-- Message content with link parsing if necessary -->
       <p class="message-content text-sm text-gray-800">
         <span v-if="message.message_type === 'text'">{{ message.content }}</span>
-        <!-- Display as link if message content is a URL (optional) -->
         <a v-else-if="message.message_type === 'link'" :href="message.content" target="_blank" class="text-blue-500">
           {{ message.content }}
         </a>
@@ -30,7 +27,7 @@ export default {
   props: {
     groupDetails: {
       type: Object,
-      required: true
+      required: false
     },
     currentUserId: {
       type: Number,

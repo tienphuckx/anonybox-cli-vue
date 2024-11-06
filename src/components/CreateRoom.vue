@@ -107,18 +107,16 @@ export default {
           };
 
           const response = await createRoomService(payload);
-
-          // Extract user and group IDs from the response
+          const userCode = response.data.gr.user_code;
           const userId = response.data.gr.user_id;
-          const groupId = response.data.gr.group_id;
+          
+          localStorage.setItem("x-user-id", userId);
+          localStorage.setItem("x-user-code", userCode);
 
-          localStorage.setItem("snip_chat_user_id", userId);
+          console.log(localStorage.getItem("x-user-code"));
+          console.log(localStorage.getItem("x-user-id"));
 
-          // Navigate to the chat room with the user and group IDs
-          this.$router.push({
-            path: "/chat-room",
-            query: { user_id: userId, group_id: groupId },
-          });
+          this.$router.push({path: "/chat-room"});
 
         } catch (error) {
           if (error.message.includes("Username")) {

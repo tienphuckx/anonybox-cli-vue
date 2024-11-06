@@ -7,17 +7,25 @@
     </aside>
 
     <!-- Main Chat Area -->
-    <main class="chat-area w-3/4 flex flex-col">
+    <main class="chat-area flex flex-col">
 
-      <!-- Chat Header -->
-      <ChatHeader v-if="groupDetails" :groupDetails="groupDetails" />
+      <ChatHeader
+        v-if="groupDetails"
+        :groupDetails="groupDetails"
+        :isSettingsOpen="isSettingsOpen"
+        @toggleSettings="toggleSettings"
+      />
 
-      <!-- Messages List -->
       <div v-if="groupDetails" class="messages flex-grow overflow-y-auto p-4">
-        <ChatMessages :groupDetails="groupDetails" :messages="messages" :currentUserId="currentUserId" />
+        <ChatMessages 
+        v-if="groupDetails"
+        :groupDetails="groupDetails" 
+        :messages="messages" 
+        :currentUserId="currentUserId"
+        :isSettingsOpen="isSettingsOpen"
+        @toggleSettings="toggleSettings" />
       </div>
 
-      <!-- Chat Input Area -->
       <ChatInput
         v-if="groupDetails"
         :currentUserId="currentUserId"
@@ -25,15 +33,27 @@
         @sendMessage="sendMessage"
       />
     </main>
+
+    <section 
+      v-if="isSettingsOpen" 
+      class="settings-panel bg-white shadow-lg transition-all duration-300"
+    >
+      <ChatSettingsPanel 
+      :groupId="currentGroupId"
+      :userId="currentUserId"
+      :groupDetails="groupDetails" />
+    </section>
+
   </div>
 </template>
 
 <script>
-import ChatSidebar from "@/components/ChatSidebar.vue";
-import ChatHeader from "@/components/ChatHeader.vue";
-import ChatMessages from "@/components/ChatMessages.vue";
-import ChatInput from "@/components/ChatInput.vue";
+import ChatSidebar from "@/components/chatroom/ChatSidebar.vue";
+import ChatHeader from "@/components/chatroom/ChatHeader.vue";
+import ChatMessages from "@/components/chatroom/ChatMessages.vue";
+import ChatInput from "@/components/chatroom/ChatInput.vue";
 import ChatRoomTool from "@/components/chatroom/ChatRoomTool.vue";
+import ChatSettingsPanel from "@/components/chatroom/ChatSettingsPanel.vue";
 import { fetchGroupDetails, fetchListGroups, sendMessageToServer } from "@/services/chatRoomService";
 
 export default {
@@ -44,6 +64,7 @@ export default {
     ChatMessages,
     ChatInput,
     ChatRoomTool,
+    ChatSettingsPanel,
   },
   data() {
     return {
@@ -51,7 +72,8 @@ export default {
       groupDetails: null,
       currentGroupId: null,
       messages: [],
-      currentUserId: Number(this.$route.query.user_id),
+      currentUserId: null,
+      isSettingsOpen: false,
     };
   },
   methods: {
@@ -63,6 +85,7 @@ export default {
 
     // Fetch group details and set messages for the selected group
     this.groupDetails = await fetchGroupDetails(this.currentGroupId);
+    console.log(this.groupDetails); //
     this.messages = this.groupDetails.messages || []; // Assume messages are part of groupDetails
   },
   async sendMessage(content) {
@@ -81,6 +104,8 @@ export default {
       message_type: "text",
     };
 
+    console.log("Payload:", payload); // Confirm that the payload is correctly formatted here
+
     try {
       const response = await sendMessageToServer(payload);
       console.log(response);
@@ -96,9 +121,18 @@ export default {
       console.error("Failed to send message:", error);
     }
   },
+  toggleSettings() {
+      this.isSettingsOpen = !this.isSettingsOpen;
+  }
 },
 
   async created() {
+    const userCode = localStorage.getItem("x-user-code");
+    const userId = localStorage.getItem("x-user-id");
+
+    console.log("Created: from localstorage: ", userCode, userId);
+
+    this.currentUserId = parseInt(userId, 10);
     const response = await fetchListGroups(this.currentUserId);
     if (response) {
       this.listGroup = response.list_gr;
@@ -108,3 +142,24 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.chatroom-container {
+  display: flex;
+  height: 90vh;
+}
+
+.chat-area {
+  flex-grow: 1;
+  transition: width 0.3s;
+}
+
+.chat-area.with-settings-open {
+  width: 70%;
+}
+
+.settings-panel {
+  overflow-y: auto;
+  transition: width 0.3s;
+}
+</style>

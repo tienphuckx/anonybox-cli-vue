@@ -18,14 +18,9 @@ import { useRoute } from "vue-router";
 export default {
   name: "App",
   created() {
-    // Check if user_id is stored in local storage
-    const userId = localStorage.getItem("snip_chat_user_id");
+    const userId = localStorage.getItem("x-user-id");
     if (userId) {
-      // Redirect to the chat room with the user_id in the query parameters
-      this.$router.push({
-        path: "/chat-room",
-        query: { user_id: userId },
-      });
+      this.$router.push({path: "/chat-room"});
     }
   },
   components: {
