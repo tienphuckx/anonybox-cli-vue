@@ -2,7 +2,7 @@
   <ChatRoomTool />
   <div class="chatroom-container h-full flex bg-gray-200">
     <!-- Sidebar for Chats -->
-    <aside class="sidebar w-1/4 bg-white border-r border-gray-300 overflow-y-auto">
+    <aside class="sidebar w-1/5 bg-white border-r border-gray-300 overflow-y-auto">
       <ChatSidebar :listGroup="listGroup" @selectContact="selectContact" />
     </aside>
 

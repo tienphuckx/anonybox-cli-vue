@@ -8,7 +8,6 @@
     >
       <div class="message-header">
         <span class="message-sender font-semibold">{{ message.user_name }}</span>
-        <span class="message-time text-xs text-gray-400 mx-3">{{ formatTime(message.created_at) }}</span>
       </div>
 
       <p class="message-content text-sm text-gray-800">
@@ -17,6 +16,10 @@
           {{ message.content }}
         </a>
       </p>
+
+      <div class="message-footer">
+        <span class="message-time text-xs text-gray-400">{{ format_seven_time_zone(message.created_at) }}</span>
+      </div>
     </div>
   </div>
 </template>
@@ -35,6 +38,50 @@ export default {
     }
   },
   methods: {
+    format_seven_time_zone(utcTime) {
+            try {
+                if (!utcTime) return "Invalid time";
+
+                const date = new Date(utcTime); // Convert UTC string to Date object
+                if (isNaN(date.getTime())) return "Invalid time";
+
+                date.setHours(date.getHours() + 7); // Add 7 hours for Vietnam timezone
+
+                return date.toLocaleString("en-US", {
+                    // year: "numeric",
+                    // month: "short",
+                    // day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit"
+                });
+            } catch (error) {
+                console.error("Error formatting Vietnam time:", error);
+                return "Invalid time";
+            }
+    },
+    formatVietnamTime(utcTime) {
+            try {
+                if (!utcTime) return "Invalid time";
+
+                const date = new Date(utcTime); // Convert UTC string to Date object
+                if (isNaN(date.getTime())) return "Invalid time";
+
+                date.setHours(date.getHours() + 7); // Add 7 hours for Vietnam timezone
+
+                return date.toLocaleString("en-US", {
+                    year: "numeric",
+                    month: "short",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit"
+                });
+            } catch (error) {
+                console.error("Error formatting Vietnam time:", error);
+                return "Invalid time";
+            }
+    },
     formatTime(timestamp) {
       const date = new Date(timestamp);
       return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
