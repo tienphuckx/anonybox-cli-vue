@@ -10,7 +10,12 @@
           <div>
             <h3 class="text-lg font-semibold">{{ groupInfo.group_name || 'Group Name' }}</h3>
             <p class="text-gray-500">{{ groupInfo.total_joined_member || 0 }} members</p>
-            <p class="text-gray-500">Expires: {{ groupInfo.expired_at }}</p>
+            <!-- <p class="text-gray-500">
+                Created: {{ groupInfo.created_at ? formatVietnamTime(groupInfo.created_at) : "No created date" }}
+            </p> -->
+            <p class="text-gray-500">
+                Expires: {{ groupInfo.expired_at ? formatVietnamTime(groupInfo.expired_at) : "No expiry date" }}
+            </p>
           </div>
         </div>
   
@@ -139,6 +144,28 @@
       await this.fetchGroupDetails();
     },
     methods: {
+        formatVietnamTime(utcTime) {
+            try {
+                if (!utcTime) return "Invalid time";
+
+                const date = new Date(utcTime); // Convert UTC string to Date object
+                if (isNaN(date.getTime())) return "Invalid time";
+
+                date.setHours(date.getHours() + 7); // Add 7 hours for Vietnam timezone
+
+                return date.toLocaleString("en-US", {
+                    year: "numeric",
+                    month: "short",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit"
+                });
+            } catch (error) {
+                console.error("Error formatting Vietnam time:", error);
+                return "Invalid time";
+            }
+        },
         async confirmRemove() {
             console.log("Confirm button clicked, proceeding with removal"); // Debug log
             await this.removeMember(this.userIdToRemove);
