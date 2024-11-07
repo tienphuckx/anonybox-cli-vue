@@ -1,5 +1,5 @@
 <template>
-  <div v-if="groupDetails" class="chat-input bg-white p-4 border-t flex items-center">
+  <div class="chat-input bg-white p-4 border-t flex items-center">
     <!-- Attachment Button -->
     <button @click="attachFile" class="text-gray-500 mr-4">
       <i class="fas fa-paperclip"></i>

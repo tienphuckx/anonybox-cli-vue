@@ -45,7 +45,7 @@
         </div>
         
         <p class="text-sm text-gray-500 flex items-center">
-          <span class="pr-2 text-green-700">{{ group.latest_ms_username }}:</span>
+          <span v-if="group.latest_ms_username" class="pr-2 text-green-700">{{ group.latest_ms_username }}:</span>
           <span class="text-sm truncate-content">
             {{ getSafeContent(group.latest_ms_content || "No messages yet") }}
           </span>

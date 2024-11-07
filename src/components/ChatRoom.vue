@@ -86,6 +86,7 @@ export default {
       this.listGroup = []; // Ensure the list is empty
     },
   async selectContact(group) {
+    this.isSettingsOpen = false; 
     console.log("Selected Group:", group); // Check if this logs the selected group object
     // Update currentGroupId with the selected group ID
     this.currentGroupId = group.group_id;
