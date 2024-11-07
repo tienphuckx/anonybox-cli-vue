@@ -1,5 +1,5 @@
 <template>
-  <div class="contact-list px-2">
+  <div class="contact-list">
     <!-- Check if listGroup has data -->
     <div v-if="listGroup.length === 0" class="no-data-card p-6 rounded-lg shadow-md bg-gradient-to-r from-purple-500 to-blue-500 text-white text-center">
       <h2 class="text-lg font-semibold">You haven’t joined any group yet</h2>

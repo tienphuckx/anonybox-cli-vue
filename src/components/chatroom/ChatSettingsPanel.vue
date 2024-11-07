@@ -348,10 +348,11 @@
           }
 
           // Display success message
-          alert(response.message || "You have successfully left the group.");
+          // alert(response.message || "You have successfully left the group..");
+          console.log("Emitting refreshGroups event to parent");
+          this.$emit("refreshGroups");
 
-          // Redirect to /chat-room
-          this.$router.push("/chat-room");
+
         } catch (error) {
           // Log and display error message
           console.error("Error leaving group:", error.message);

@@ -41,7 +41,10 @@
       <ChatSettingsPanel 
       :groupId="currentGroupId"
       :userId="currentUserId"
-      :groupDetails="groupDetails" />
+      :groupDetails="groupDetails"
+      @refreshGroups="fetchListGroups" />
+
+      
     </section>
 
   </div>
@@ -128,7 +131,22 @@ export default {
   },
   toggleSettings() {
       this.isSettingsOpen = !this.isSettingsOpen;
+  },
+  async fetchListGroups() {
+  console.log("fetchListGroups triggered");
+  try {
+    const response = await fetchListGroups(this.currentUserId);
+    if (response) {
+      console.log("List of groups fetched:", response.list_gr);
+      this.listGroup = response.list_gr;
+    } else {
+      console.error("Failed to fetch list of groups:", response.error);
+    }
+  } catch (error) {
+    console.error("Error fetching list of groups:", error.message);
   }
+}
+
 },
 
   async created() {
