@@ -1,14 +1,18 @@
 <template>
   <div class="chatroom-tool flex justify-end space-x-4 p-2 bg-green-600 border-b border-gray-300">
-    <!-- Create New Room Button -->
-    <button @click="toggleCreateRoomModal" class="icon-button">
-      <i class="fas fa-plus-circle text-gray-500 text-xl"></i>
-    </button>
 
-    <!-- Join Room Button -->
-    <button @click="toggleJoinGroupModal" class="icon-button">
-      <i class="fas fa-sign-in-alt text-green-700 text-xl"></i>
-    </button>
+    <button
+          @click="toggleCreateRoomModal"
+          class="btn-gradient text-sm px-4 py-2 rounded-lg"
+        >
+          Create Group
+        </button>
+        <button
+          @click="toggleJoinGroupModal"
+          class="btn-outline text-sm px-4 py-2 rounded-lg"
+        >
+          Join Group
+        </button>
 
     <CreateRoomModel
       v-if="isCreateRoomModalVisible"
@@ -73,4 +77,26 @@ export default {
 .icon-button:hover {
   background-color: #e2e8f0; /* slightly darker gray on hover */
 }
+.btn-gradient {
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+    color: white;
+    border: none;
+    transition: background 0.3s;
+  }
+  
+  .btn-gradient:hover {
+    background: linear-gradient(135deg, #8e44ad, #9b59b6);
+  }
+  
+  .btn-outline {
+    background: white;
+    color: #8e44ad;
+    border: 1px solid #8e44ad;
+    transition: all 0.3s;
+  }
+  
+  .btn-outline:hover {
+    background: #8e44ad;
+    color: white;
+  }
 </style>

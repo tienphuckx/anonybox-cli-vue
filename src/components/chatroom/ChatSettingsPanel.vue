@@ -30,28 +30,40 @@
         <div v-if="groupInfo.list_joined_member.length" class="border-t pt-4 space-y-2">
         <h4 class="text-lg font-semibold">Joined Members</h4>
         <ul class="list-disc pl-6 space-y-2">
-            <li
+          <li
             v-for="member in visibleMembers"
             :key="member.user_id"
             class="grid grid-cols-2 items-center gap-4"
-            >
+          >
             <!-- Member Name in First Column -->
-            <span>{{ member.username }}</span>
-            
-            <!-- Actions in Second Column (Only visible if the user is the group owner) -->
-            <span v-if="isGroupOwner" class="flex space-x-4 justify-end">
-                <button 
-                    @click="confirmRemoveMember(member.user_id, member.username)"
-                    class="text-red-500" 
-                    title="Remove Member">
-                <i class="fas fa-user-slash"></i>
-                </button>
-                <button @click="muteMember(member.user_id)" class="text-yellow-500" title="Mute Member">
-                <i class="fas fa-volume-mute"></i>
-                </button>
+            <span>
+              <span v-if="member.user_id === groupInfo.owner_id" class="text-green-600">You</span>
+              <span v-else class="text-gray-600">{{ member.username }}</span>
             </span>
-            </li>
+
+            <!-- Actions in Second Column (Only visible if the user is the group owner and not 'You') -->
+            <span
+              v-if="isGroupOwner && member.user_id !== groupInfo.owner_id"
+              class="flex space-x-4 justify-end"
+            >
+              <button
+                @click="confirmRemoveMember(member.user_id, member.username)"
+                class="text-red-500"
+                title="Remove Member"
+              >
+                <i class="fas fa-user-slash"></i>
+              </button>
+              <button
+                @click="muteMember(member.user_id)"
+                class="text-yellow-500"
+                title="Mute Member"
+              >
+                <i class="fas fa-volume-mute"></i>
+              </button>
+            </span>
+          </li>
         </ul>
+
         
         <div class="flex justify-end">
             <button
@@ -95,6 +107,29 @@
         </div>
       </div>
 
+      <div class="flex justify-between space-x-4 mt-4">
+        <!-- Delete Group Button (only for the owner) -->
+        <button
+          v-if="isGroupOwner"
+          @click="deleteGroup"
+          class="text-red-500 flex items-center space-x-2 px-4 py-2 border border-red-500 rounded hover:bg-red-100"
+          title="Delete Group"
+        >
+          <i class="fas fa-trash"></i>
+          <span>Delete Group</span>
+        </button>
+
+        <!-- Leave Group Button (only for members) -->
+        <button
+          v-else
+          @click="leaveGroup"
+          class="text-red-500 flex items-center space-x-2 px-4 py-2 border border-red-500 rounded hover:bg-red-100"
+          title="Leave Group"
+        >
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Leave Group</span>
+        </button>
+      </div>
 
       <CustomModal
         v-if="showModal"
@@ -108,7 +143,7 @@
   </template>
   
   <script>
-  import { removeUserFromGroup } from "@/services/chatRoomService";
+  import { removeUserFromGroup ,delete_group, leave_group} from "@/services/chatRoomService";
   import CustomModal from "@/components/custom/CustomModal.vue";
   export default {
     name: "ChatSettingsPanel",
@@ -263,9 +298,68 @@
         } catch (error) {
           console.error("Error fetching group details:", error);
         }
-      }
-    }
-  };
+      },
+      async deleteGroup() {
+        try {
+          const confirmation = confirm("Are you sure you want to delete this group?");
+          if (!confirmation) return;
+
+          const payload = {
+            gr_id: this.groupId,
+            u_id: this.groupInfo.owner_id, // Make sure `userId` is correctly defined
+          };
+
+          const response = await delete_group(payload);
+
+          // Check response code
+          if (response.code !== 0) {
+            alert(`Failed to delete group: ${response.message}`);
+            return;
+          }
+
+          // Display success message and redirect
+          alert(response.message || "Group deleted successfully!");
+          this.$router.push("/groups");
+        } catch (error) {
+          console.error("Error deleting group:", error.message);
+          alert(`Error: ${error.message}`);
+        }
+      },
+
+      async leaveGroup() {
+        try {
+          // Show confirmation prompt
+          const confirmation = confirm("Are you sure you want to leave this group?");
+          if (!confirmation) return;
+
+          // Prepare payload
+          const payload = {
+            gr_id: this.groupId,
+            u_id: parseInt(localStorage.getItem("x-user-id"), 10),
+          };
+
+          // Call the `leave_group` service
+          const response = await leave_group(payload);
+
+          // Check response code
+          if (response.code !== 200) {
+            alert(`Failed to leave the group: ${response.message}`);
+            return;
+          }
+
+          // Display success message
+          alert(response.message || "You have successfully left the group.");
+
+          // Redirect to /chat-room
+          this.$router.push("/chat-room");
+        } catch (error) {
+          // Log and display error message
+          console.error("Error leaving group:", error.message);
+          alert(`Error: ${error.message}`);
+        }
+      },
+    }}
+
   </script>
   
   <style scoped>

@@ -109,3 +109,63 @@ export async function fetchGroupDetails(groupId) {
     }
   }
   
+
+  export async function delete_group(payload) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/del-gr`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+  
+      if (!response.ok) {
+        // Handle server errors
+        const errorData = await response.json();
+        throw new Error(errorData.msg || `Error: ${response.status} ${response.statusText}`);
+      }
+  
+      const data = await response.json();
+  
+      // Return normalized response for easier handling
+      return {
+        code: data.code,
+        message: data.data?.del_status || data.msg || "Group deleted successfully.",
+      };
+    } catch (error) {
+      console.error("Error deleting group:", error);
+      throw error;
+    }
+  }
+  
+  export async function leave_group(payload) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/leave-gr`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+  
+      if (!response.ok) {
+        // Handle server errors
+        const errorData = await response.json();
+        throw new Error(errorData.msg || `Error: ${response.status} ${response.statusText}`);
+      }
+  
+      const data = await response.json();
+  
+      // Return normalized response for easier handling
+      return {
+        code: data.code,
+        message: data.data?.del_status || data.msg || "Left group successfully.",
+      };
+    } catch (error) {
+      console.error("Error leaving group:", error);
+      throw error;
+    }
+  }
+  
+  

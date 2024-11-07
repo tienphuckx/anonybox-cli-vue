@@ -77,6 +77,11 @@ export default {
     };
   },
   methods: {
+    handleNoGroups() {
+      alert("You haven't joined any groups yet!"); // Display a message to the user
+      // Optionally, navigate to a different page or show a UI message
+      this.listGroup = []; // Ensure the list is empty
+    },
   async selectContact(group) {
     console.log("Selected Group:", group); // Check if this logs the selected group object
     // Update currentGroupId with the selected group ID
@@ -131,6 +136,12 @@ export default {
     const userId = localStorage.getItem("x-user-id");
 
     console.log("Created: from localstorage: ", userCode, userId);
+
+    // Check if userId is valid (not null, empty, or undefined)
+    if (!userId || userId.trim() === "" || isNaN(parseInt(userId, 10))) {
+      this.handleNoGroups(); // Call a function to show the appropriate message
+      return;
+    }
 
     this.currentUserId = parseInt(userId, 10);
     const response = await fetchListGroups(this.currentUserId);
