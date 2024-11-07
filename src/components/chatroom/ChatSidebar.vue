@@ -146,7 +146,7 @@
   
   /* No data card styles */
   .no-data-card {
-    margin: 20px auto;
+    margin: 7px auto;
     max-width: 400px;
   }
   

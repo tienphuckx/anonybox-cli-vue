@@ -23,15 +23,14 @@
       </div>
 
       <!-- Waiting for Approval -->
-      <div v-if="5 > 0" class="flex items-center space-x-2 text-sm">
+      <div v-if="groupDetails.waiting_member > 0" class="flex items-center space-x-2 text-sm">
         <p class="text-gray-500">
           <span class="text-yellow-600 font-medium">{{ 5 }}</span>
-          <span class="text-gray-500"> member(s) waiting for approval</span>
+          <span class="text-gray-500">{{ groupDetails.waiting_member }} member(s) waiting for approval</span>
         </p>
         <i class="fas fa-clock text-yellow-500"></i>
       </div>
     </div>
-
 
 
     <!-- Header Icons -->
