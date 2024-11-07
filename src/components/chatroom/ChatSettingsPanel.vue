@@ -316,10 +316,7 @@
             alert(`Failed to delete group: ${response.message}`);
             return;
           }
-
-          // Display success message and redirect
-          alert(response.message || "Group deleted successfully!");
-          this.$router.push("/groups");
+          this.$emit("refreshGroups");
         } catch (error) {
           console.error("Error deleting group:", error.message);
           alert(`Error: ${error.message}`);
@@ -347,11 +344,8 @@
             return;
           }
 
-          // Display success message
-          // alert(response.message || "You have successfully left the group..");
           console.log("Emitting refreshGroups event to parent");
           this.$emit("refreshGroups");
-
 
         } catch (error) {
           // Log and display error message
