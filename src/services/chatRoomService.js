@@ -38,6 +38,7 @@ export async function sendMessageToServer(payload) {
 export async function fetchListGroups(userId) {
   try {
     const response = await fetch(`${API_BASE_URL}/gr/list/${userId}`);
+    console.log(response);
     if (!response.ok) {
       throw new Error(`Error fetching groups: ${response.statusText}`);
     }

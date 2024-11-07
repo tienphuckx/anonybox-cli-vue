@@ -3,7 +3,9 @@
   <div class="chatroom-container h-full flex bg-gray-200">
     <!-- Sidebar for Chats -->
     <aside class="sidebar w-1/5 bg-white border-r border-gray-300 overflow-y-auto">
-      <ChatSidebar :listGroup="listGroup" @selectContact="selectContact" />
+      <ChatSidebar :listGroup="listGroup" 
+                    :listWaitingGroup="listWaitingGroup"
+                    @selectContact="selectContact" />
     </aside>
 
     <!-- Main Chat Area -->
@@ -72,6 +74,7 @@ export default {
   data() {
     return {
       listGroup: [],
+      listWaitingGroup: [],
       groupDetails: null,
       currentGroupId: null,
       messages: [],
@@ -169,6 +172,12 @@ export default {
 
     this.currentUserId = parseInt(userId, 10);
     const response = await fetchListGroups(this.currentUserId);
+
+    console.log("List of waitting gr:", response.list_waiting_gr);
+    if (response.list_waiting_gr) {
+      this.listWaitingGroup = response.list_waiting_gr;
+    }
+
     if (response) {
       this.listGroup = response.list_gr;
     } else {

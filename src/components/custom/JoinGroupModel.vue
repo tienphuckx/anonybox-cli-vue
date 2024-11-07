@@ -110,16 +110,17 @@
         }
         },
       async handleSubmit() {
-        if (!this.validateForm()) {
-          return;
-        }
-  
+        console.log("Submit join group");  
         const payload = {
           group_code: this.groupCode,
           message: this.message,
           username: this.username,
         };
+        console.log("Payload:", payload);
+
         const x_user_code = localStorage.getItem("x-user-code");
+        console.log("x-user-code:", x_user_code);
+
         try {
             const response = await joinRoomService(payload, this.$router, x_user_code);            
             console.log(response);
