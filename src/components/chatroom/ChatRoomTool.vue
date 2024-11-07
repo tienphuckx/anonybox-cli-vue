@@ -45,6 +45,7 @@ export default {
     };
   },
   methods: {
+
     toggleCreateRoomModal() {
       this.isCreateRoomModalVisible = !this.isCreateRoomModalVisible;
     },
@@ -55,6 +56,7 @@ export default {
       this.isCreateRoomModalVisible = false; // Close the modal
       this.isJoinGroupModalVisible = false;
       alert(message); // Display a success message
+      this.$emit("refreshGroups");
       this.$router.push({path: "/chat-room"});
     },
   },

@@ -1,5 +1,6 @@
 <template>
-  <header class="chat-header bg-gray-100 border-b p-4 flex items-center">
+  
+  <header v-if="groupDetails" class="chat-header bg-gray-100 border-b p-4 flex items-center">
     <!-- Group Avatar -->
     <div class="avatar w-10 h-10 bg-gray-300 rounded-full mr-4 overflow-hidden">
       <img src="@/assets/logo.png" alt="Group Avatar" class="w-full h-full object-cover" />

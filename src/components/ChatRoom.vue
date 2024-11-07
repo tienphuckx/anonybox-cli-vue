@@ -1,5 +1,5 @@
 <template>
-  <ChatRoomTool />
+  <ChatRoomTool @refreshGroups="refresh_list_group_and_chat_area" />
   <div class="chatroom-container h-full flex bg-gray-200">
     <!-- Sidebar for Chats -->
     <aside class="sidebar w-1/5 bg-white border-r border-gray-300 overflow-y-auto">
@@ -42,7 +42,7 @@
       :groupId="currentGroupId"
       :userId="currentUserId"
       :groupDetails="groupDetails"
-      @refreshGroups="fetchListGroups" />
+      @refreshGroups="refresh_list_group_and_chat_area" />
 
       
     </section>
@@ -132,22 +132,27 @@ export default {
   toggleSettings() {
       this.isSettingsOpen = !this.isSettingsOpen;
   },
-  async fetchListGroups() {
-  console.log("fetchListGroups triggered");
-  try {
-    const response = await fetchListGroups(this.currentUserId);
-    if (response) {
-      console.log("List of groups fetched:", response.list_gr);
-      this.listGroup = response.list_gr;
-    } else {
-      console.error("Failed to fetch list of groups:", response.error);
-    }
-  } catch (error) {
-    console.error("Error fetching list of groups:", error.message);
-  }
-}
+  async refresh_list_group_and_chat_area() {
+    console.log("fetchListGroups triggered");
 
-},
+    // empty chat group message
+    this.groupDetails = null;
+    this.isSettingsOpen = false;
+    
+    try {
+      const response = await fetchListGroups(this.currentUserId);
+      if (response) {
+        console.log("List of groups fetched:", response.list_gr);
+        this.listGroup = response.list_gr;
+      } else {
+        console.error("Failed to fetch list of groups:", response.error);
+      }
+    } catch (error) {
+      console.error("Error fetching list of groups:", error.message);
+    }
+  }
+
+  },
 
   async created() {
     const userCode = localStorage.getItem("x-user-code");

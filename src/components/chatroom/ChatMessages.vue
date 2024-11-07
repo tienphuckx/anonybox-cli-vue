@@ -1,5 +1,5 @@
 <template>
-  <div class="message-container">
+  <div v-if="groupDetails" class="message-container">
     <!-- Display each message with sender name, content, and timestamp -->
     <div
       v-for="(message, index) in groupDetails.messages"

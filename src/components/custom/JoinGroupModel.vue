@@ -113,6 +113,7 @@
             console.log(response);
             this.$emit("success", "Join request sent successfully.");
             this.closeModal();
+            this.$emit("refreshGroups");
         } catch (error) {
           console.error("Error joining room:", error.message);
           alert("Failed to join room. Please try again.");
