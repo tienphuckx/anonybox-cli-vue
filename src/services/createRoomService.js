@@ -1,12 +1,13 @@
 const API_HOST = "http://localhost:8080";
 
 // Function to handle the API call for creating a room
-export async function createRoomService(payload) {
+export async function createRoomService(payload, x_user_code) {
   try {
     const response = await fetch(`${API_HOST}/v1/add-user-group`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "x-user-code": x_user_code
       },
       body: JSON.stringify(payload),
     });

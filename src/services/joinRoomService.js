@@ -2,12 +2,13 @@
 
 const API_HOST = "http://localhost:8080";
 
-export async function joinRoomService(payload, router) {
+export async function joinRoomService(payload, router, x_user_code) {
   try {
     const response = await fetch(`${API_HOST}/join-group`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "x-user-code": x_user_code,
       },
       body: JSON.stringify(payload),
     });
