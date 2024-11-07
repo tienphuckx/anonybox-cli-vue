@@ -4,16 +4,16 @@
         <h1 class="text-2xl font-bold text-purple-700 text-center mb-6">Join Room</h1>
         <form @submit.prevent="handleSubmit">
           <!-- Username Field -->
-          <div class="mb-4">
+          <div class="mb-4" v-if="!isUserExists">
             <label class="block text-purple-700 font-semibold">User Name</label>
             <input
-              type="text"
-              v-model="username"
-              class="input-field"
-              placeholder="Enter your name"
+                type="text"
+                v-model="username"
+                class="input-field"
+                placeholder="Enter your name"
             />
             <p v-if="errors.username" class="text-red-500 text-sm mt-1">{{ errors.username }}</p>
-          </div>
+            </div>
   
           <!-- Group Code Field -->
           <div class="mb-4">
@@ -61,6 +61,7 @@
     },
     data() {
       return {
+        isUserExists: true,
         username: "",
         groupCode: "",
         message: "",
@@ -97,6 +98,17 @@
   
         return isValid;
       },
+      async created() {
+        const userId = localStorage.getItem("x-user-id");
+
+        // If x-user-id exists, hide the username field and set a default value
+        if (userId && !isNaN(parseInt(userId, 10))) {
+            this.isUserExists = true; // User exists
+            this.username = "xxx";   // Default username value
+        } else {
+            this.isUserExists = false; // User does not exist
+        }
+        },
       async handleSubmit() {
         if (!this.validateForm()) {
           return;

@@ -4,16 +4,16 @@
         <h2 class="text-xl font-semibold text-purple-700 mb-6 text-center">Create New Room</h2>
         <form @submit.prevent="handleSubmit" class="space-y-4">
           <!-- User Name Field -->
-          <div>
+          <div v-if="!isUserExists">
             <label class="block text-purple-700 font-semibold mb-1">User Name</label>
             <input
-              type="text"
-              v-model="username"
-              class="input-field"
-              placeholder="Enter your name"
+                type="text"
+                v-model="username"
+                class="input-field"
+                placeholder="Enter your name"
             />
             <p v-if="usernameError" class="text-red-500 text-sm mt-1">{{ usernameError }}</p>
-          </div>
+            </div>
   
           <!-- Group Name Field -->
           <div>
@@ -83,6 +83,7 @@
     },
     data() {
       return {
+        isUserExists: true,
         username: "",
         groupName: "",
         duration: 60, // Default duration
@@ -92,6 +93,7 @@
         groupNameError: "",
       };
     },
+    
     methods: {
       closeModal() {
         this.$emit("close");
@@ -138,6 +140,18 @@
         }
       },
     },
+    async created() {
+        const userId = localStorage.getItem("x-user-id");
+
+        // Check if userId exists and is valid
+        if (userId && !isNaN(parseInt(userId, 10))) {
+            this.isUserExists = true; // User exists
+            this.username = "xxx";   // Set default username to 'xxx' for API
+        } else {
+            this.isUserExists = false; // User does not exist, show username field
+        }
+    }
+
   };
   </script>
   
