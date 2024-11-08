@@ -39,7 +39,15 @@
             <span>
               <span v-if="member.user_id === groupInfo.owner_id" class="text-green-600">You</span>
               <span v-else class="text-gray-600">{{ member.username }}</span>
+              
+              <span
+                v-if="member.user_id === groupInfo.owner_id"
+                class="group-owner-label text-red-600 ml-6"
+              >
+                Group owner
+              </span>
             </span>
+
 
             <!-- Actions in Second Column (Only visible if the user is the group owner and not 'You') -->
             <span
@@ -361,5 +369,13 @@
   .settings-panel {
     transition: transform 0.3s ease;
   }
+  .group-owner-label {
+    background-color: #ffe4e6; /* Light red background */
+    border-radius: 10px; /* Rounded corners */
+    padding: 2px 8px; /* Padding for better appearance */
+    font-size: 0.875rem; /* Slightly smaller font size */
+    display: inline-block; /* Ensures it wraps nicely */
+  }
   </style>
+
   

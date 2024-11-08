@@ -181,4 +181,7 @@ export default {
   align-items: center;
   border-bottom: 1px solid #e5e7eb; /* Light border between contacts */
 }
+.no-data-card {
+  margin: 0 9px 0 9px;
+}
 </style>

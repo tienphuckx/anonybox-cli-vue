@@ -13,7 +13,7 @@
       placeholder="Write a message..."
       ref="chatInput"
       class="flex-grow p-2 border border-gray-300 rounded-lg focus:outline-none resize-none custom-scroll"
-      :style="{ maxHeight: '300px' }"
+      :style="{ maxHeight: '600px' }"
     ></textarea>
 
     <!-- Send Button -->
@@ -38,7 +38,8 @@ export default {
     adjustHeight() {
       const textarea = this.$refs.chatInput;
       textarea.style.height = "auto"; // Reset height to auto to calculate the new height
-      textarea.style.height = `${Math.min(textarea.scrollHeight, 300)}px`; // Set height to scrollHeight, but not more than 600px
+      textarea.style.height = `${Math.min(textarea.scrollHeight, 600)}px`; // Set height to scrollHeight, but not more than 600px
+      textarea.scrollTop = textarea.scrollHeight; // Ensure scrolling to the latest line
     },
     handleKeyPress(event) {
       if (event.key === "Enter" && !event.ctrlKey) {
@@ -68,6 +69,7 @@ export default {
 };
 </script>
 
+
 <style scoped>
 .chat-input {
   display: flex;
@@ -87,6 +89,7 @@ textarea::-webkit-scrollbar {
 textarea.custom-scroll {
   max-height: 600px; /* Enforce a maximum height */
   min-height: 40px; /* Optional: Set a minimum height */
-  transition: height 0.2s; /* Smooth height adjustment */
+  transition: height 0.2s ease-in-out; /* Smooth height adjustment */
+  line-height: 1.5; /* Consistent line spacing for better readability */
 }
 </style>

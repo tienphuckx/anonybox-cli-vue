@@ -3,14 +3,15 @@
   <div class="chatroom-container h-full flex bg-gray-200">
     <!-- Sidebar for Chats -->
     <aside class="sidebar w-1/5 bg-white border-r border-gray-300 overflow-y-auto">
-      <ChatSidebar :listGroup="listGroup" 
-                    :listWaitingGroup="listWaitingGroup"
-                    @selectContact="selectContact" />
+      <ChatSidebar 
+        :listGroup="listGroup" 
+        :listWaitingGroup="listWaitingGroup"
+        @selectContact="selectContact" 
+      />
     </aside>
 
     <!-- Main Chat Area -->
     <main class="chat-area flex flex-col">
-
       <ChatHeader
         v-if="groupDetails"
         :groupDetails="groupDetails"
@@ -18,14 +19,16 @@
         @toggleSettings="toggleSettings"
       />
 
-      <div v-if="groupDetails" class="messages flex-grow overflow-y-auto p-4">
+      <div class="messages-container flex-grow overflow-y-auto p-4">
         <ChatMessages 
-        v-if="groupDetails"
-        :groupDetails="groupDetails" 
-        :messages="messages" 
-        :currentUserId="currentUserId"
-        :isSettingsOpen="isSettingsOpen"
-        @toggleSettings="toggleSettings" />
+          v-if="groupDetails"
+          :groupDetails="groupDetails" 
+          :messages="messages" 
+          :currentUserId="currentUserId"
+        />
+        <p v-else class="text-gray-500 text-center">
+          Select a group to start chatting
+        </p>
       </div>
 
       <ChatInput
@@ -41,14 +44,12 @@
       class="settings-panel bg-white shadow-lg transition-all duration-300"
     >
       <ChatSettingsPanel 
-      :groupId="currentGroupId"
-      :userId="currentUserId"
-      :groupDetails="groupDetails"
-      @refreshGroups="refresh_list_group_and_chat_area" />
-
-      
+        :groupId="currentGroupId"
+        :userId="currentUserId"
+        :groupDetails="groupDetails"
+        @refreshGroups="refresh_list_group_and_chat_area" 
+      />
     </section>
-
   </div>
 </template>
 
@@ -190,16 +191,21 @@ export default {
 <style scoped>
 .chatroom-container {
   display: flex;
-  height: 90vh;
+  height: 93vh;
 }
 
 .chat-area {
   flex-grow: 1;
-  transition: width 0.3s;
+  overflow: hidden; /* Prevent content overflow */
 }
 
-.chat-area.with-settings-open {
-  width: 70%;
+.messages-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  height: 100%;
+  max-width: 100%; /* Limit width to the parent container */
 }
 
 .settings-panel {

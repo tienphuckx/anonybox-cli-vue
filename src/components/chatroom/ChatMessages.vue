@@ -38,12 +38,11 @@ export default {
     },
   },
   watch: {
-    // Watch for changes in messages to scroll to the bottom
     "groupDetails.messages": {
       handler() {
         this.scrollToBottom();
       },
-      deep: true, // Detect changes in the array's content
+      deep: true,
     },
   },
   methods: {
@@ -52,7 +51,7 @@ export default {
       if (container) {
         container.scrollTo({
           top: container.scrollHeight,
-          behavior: "smooth", // Smooth scrolling effect
+          behavior: "smooth",
         });
       }
     },
@@ -60,10 +59,10 @@ export default {
       try {
         if (!utcTime) return "Invalid time";
 
-        const date = new Date(utcTime); // Convert UTC string to Date object
+        const date = new Date(utcTime);
         if (isNaN(date.getTime())) return "Invalid time";
 
-        date.setHours(date.getHours() + 7); // Add 7 hours for Vietnam timezone
+        date.setHours(date.getHours() + 7);
 
         return date.toLocaleString("en-US", {
           hour: "2-digit",
@@ -81,33 +80,29 @@ export default {
   },
 };
 </script>
-
 <style scoped>
 .message-container {
   display: flex;
   flex-direction: column;
   gap: 10px;
   overflow-y: auto;
-  height: 100%; /* Adjust height based on parent container */
-
-  /* Hide the scrollbar */
+  height: 100%;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE 10+ */
 }
 
 .message-container::-webkit-scrollbar {
-  display: none; /* Webkit browsers */
+  display: none; /* Hide scrollbar in WebKit browsers */
 }
 
 .message-item {
-  max-width: 70%; /* Limit message width to 70% of the container */
+  max-width: 900px; /* Limit message width to 70% of the container */
   padding: 10px;
   border-radius: 10px;
   display: inline-block;
-  position: relative;
   margin-bottom: 10px;
-  word-wrap: break-word; /* Break long words onto a new line */
-  white-space: pre-wrap; /* Preserve line breaks in the message content */
+  word-break: break-word; /* Break long words */
+  white-space: pre-wrap; /* Preserve line breaks */
 }
 
 .message-item.sent {
@@ -133,7 +128,8 @@ export default {
 }
 
 .message-content {
-  white-space: pre-wrap;
+  word-wrap: break-word; /* Wrap long words to prevent overflow */
+  overflow-wrap: break-word; /* Ensure breaking behavior across browsers */
 }
 
 .message-time {
