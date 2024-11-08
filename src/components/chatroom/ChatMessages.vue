@@ -1,5 +1,5 @@
 <template>
-  <div v-if="groupDetails" class="message-container">
+  <div v-if="groupDetails" class="message-container" ref="messageContainer">
     <!-- Display each message with sender name, content, and timestamp -->
     <div
       v-for="(message, index) in groupDetails.messages"
@@ -18,7 +18,7 @@
       </p>
 
       <div class="message-footer">
-        <span class="message-time text-xs text-gray-400">{{ format_seven_time_zone(message.created_at) }}</span>
+        <span class="message-time text-xs text-gray-400">{{ formatTime(message.created_at) }}</span>
       </div>
     </div>
   </div>
@@ -30,63 +30,55 @@ export default {
   props: {
     groupDetails: {
       type: Object,
-      required: false
+      required: false,
     },
     currentUserId: {
       type: Number,
-      required: true
-    }
+      required: true,
+    },
+  },
+  watch: {
+    // Watch for changes in messages to scroll to the bottom
+    "groupDetails.messages": {
+      handler() {
+        this.scrollToBottom();
+      },
+      deep: true, // Detect changes in the array's content
+    },
   },
   methods: {
-    format_seven_time_zone(utcTime) {
-            try {
-                if (!utcTime) return "Invalid time";
-
-                const date = new Date(utcTime); // Convert UTC string to Date object
-                if (isNaN(date.getTime())) return "Invalid time";
-
-                date.setHours(date.getHours() + 7); // Add 7 hours for Vietnam timezone
-
-                return date.toLocaleString("en-US", {
-                    // year: "numeric",
-                    // month: "short",
-                    // day: "2-digit",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    second: "2-digit"
-                });
-            } catch (error) {
-                console.error("Error formatting Vietnam time:", error);
-                return "Invalid time";
-            }
+    scrollToBottom() {
+      const container = this.$refs.messageContainer;
+      if (container) {
+        container.scrollTo({
+          top: container.scrollHeight,
+          behavior: "smooth", // Smooth scrolling effect
+        });
+      }
     },
-    formatVietnamTime(utcTime) {
-            try {
-                if (!utcTime) return "Invalid time";
+    formatTime(utcTime) {
+      try {
+        if (!utcTime) return "Invalid time";
 
-                const date = new Date(utcTime); // Convert UTC string to Date object
-                if (isNaN(date.getTime())) return "Invalid time";
+        const date = new Date(utcTime); // Convert UTC string to Date object
+        if (isNaN(date.getTime())) return "Invalid time";
 
-                date.setHours(date.getHours() + 7); // Add 7 hours for Vietnam timezone
+        date.setHours(date.getHours() + 7); // Add 7 hours for Vietnam timezone
 
-                return date.toLocaleString("en-US", {
-                    year: "numeric",
-                    month: "short",
-                    day: "2-digit",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    second: "2-digit"
-                });
-            } catch (error) {
-                console.error("Error formatting Vietnam time:", error);
-                return "Invalid time";
-            }
+        return date.toLocaleString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        });
+      } catch (error) {
+        console.error("Error formatting time:", error);
+        return "Invalid time";
+      }
     },
-    formatTime(timestamp) {
-      const date = new Date(timestamp);
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }
-  }
+  },
+  updated() {
+    this.scrollToBottom();
+  },
 };
 </script>
 
@@ -95,15 +87,27 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  overflow-y: auto;
+  height: 100%; /* Adjust height based on parent container */
+
+  /* Hide the scrollbar */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+
+.message-container::-webkit-scrollbar {
+  display: none; /* Webkit browsers */
 }
 
 .message-item {
-  max-width: 70%;
+  max-width: 70%; /* Limit message width to 70% of the container */
   padding: 10px;
   border-radius: 10px;
   display: inline-block;
   position: relative;
   margin-bottom: 10px;
+  word-wrap: break-word; /* Break long words onto a new line */
+  white-space: pre-wrap; /* Preserve line breaks in the message content */
 }
 
 .message-item.sent {
@@ -129,7 +133,7 @@ export default {
 }
 
 .message-content {
-  white-space: pre-wrap; /* Preserves line breaks in message content */
+  white-space: pre-wrap;
 }
 
 .message-time {

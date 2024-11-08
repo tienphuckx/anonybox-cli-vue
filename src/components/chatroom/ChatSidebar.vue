@@ -9,7 +9,7 @@
         ]"
         @click="activeTab = 'joined'"
       >
-        Joined Groups ({{ listGroup.length }})
+        Joined Groups ({{ listGroup?.length || 0 }})
       </button>
       <button
         :class="[
@@ -18,7 +18,7 @@
         ]"
         @click="activeTab = 'waiting'"
       >
-        Waiting Groups ({{ listWaitingGroup.length }})
+        Waiting Groups ({{ listWaitingGroup?.length || 0 }})
       </button>
     </div>
 
