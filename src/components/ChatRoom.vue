@@ -61,7 +61,7 @@ import ChatInput from "@/components/chatroom/ChatInput.vue";
 import ChatRoomTool from "@/components/chatroom/ChatRoomTool.vue";
 import ChatSettingsPanel from "@/components/chatroom/ChatSettingsPanel.vue";
 import { fetchGroupDetails, fetchListGroups, sendMessageToServer } from "@/services/chatRoomService";
-
+// import { useWebSocket } from '@vueuse/core';
 export default {
   name: "ChatRoom",
   components: {
@@ -84,79 +84,160 @@ export default {
     };
   },
   methods: {
+    connectWebSocket() {
+      if (this.ws) {
+        console.log("Closing previous WebSocket connection...");
+        this.ws.close();
+      }
+
+      const xUserCode = localStorage.getItem("x-user-code");
+      if (!xUserCode) {
+        console.error("x-user-code is missing from localStorage.");
+        return;
+      }
+
+      if (!this.currentGroupId) {
+        console.error("currentGroupId is not set. Cannot establish WebSocket connection.");
+        return;
+      }
+
+      const wsUrl = `ws://localhost:8080/ws/groups/${this.currentGroupId}?x-user-code=${encodeURIComponent(xUserCode)}`;
+      this.ws = new WebSocket(wsUrl);
+
+      this.ws.onopen = () => {
+        this.wsStatus = "connected";
+        console.log("WebSocket connected");
+      };
+
+      this.ws.onmessage = (event) => {
+        try {
+          const message = JSON.parse(event.data);
+          console.log("Message from server:", message);
+          // Handle incoming messages and update the messages list
+          this.messages.push(message);
+        } catch (error) {
+          console.error("Failed to parse WebSocket message:", error);
+        }
+      };
+
+      this.ws.onclose = () => {
+        this.wsStatus = "disconnected";
+        console.log("WebSocket disconnected");
+        // this.reconnectWebSocket();
+      };
+
+      this.ws.onerror = (error) => {
+        console.error("WebSocket error:", error);
+        this.ws.close();
+      };
+    },
+
     handleNoGroups() {
       alert("You haven't joined any groups yet!"); // Display a message to the user
-      // Optionally, navigate to a different page or show a UI message
       this.listGroup = []; // Ensure the list is empty
+      this.groupDetails = null;
+      this.messages = [];
     },
-  async selectContact(group) {
-    this.isSettingsOpen = false; 
-    console.log("Selected Group:", group); // Check if this logs the selected group object
-    // Update currentGroupId with the selected group ID
-    this.currentGroupId = group.group_id;
-    console.log("Updated currentGroupId:", this.currentGroupId); // Check if currentGroupId is set correctly
 
-    // Fetch group details and set messages for the selected group
-    this.groupDetails = await fetchGroupDetails(this.currentGroupId);
-    console.log(this.groupDetails); //
-    this.messages = this.groupDetails.messages || []; // Assume messages are part of groupDetails
-  },
-  async sendMessage(content) {
-    console.log("Current User ID:", this.currentUserId);
-    console.log("Current Group ID:", this.currentGroupId); // Confirm that currentGroupId is set correctly here
+    reconnectWebSocket(attempt = 1) {
+      if (attempt > 5) {
+        console.error("Maximum reconnection attempts reached.");
+        return;
+      }
 
-    if (!this.currentUserId || !this.currentGroupId) {
-      console.error("User ID or Group ID is missing.");
-      return;
-    }
+      setTimeout(() => {
+        console.log(`Reconnecting WebSocket... Attempt ${attempt}`);
+        // this.connectWebSocket();
+      }, attempt * 3000); // Exponential backoff
+    },
 
-    const payload = {
-      user_id: this.currentUserId,
-      group_id: this.currentGroupId,
-      content: content,
-      message_type: "text",
-    };
+    async selectContact(group) {
+      this.isSettingsOpen = false;
 
-    console.log("Payload:", payload); // Confirm that the payload is correctly formatted here
+      if (!group || !group.group_id) {
+        console.error("Invalid group selected.");
+        return;
+      }
 
-    try {
-      const response = await sendMessageToServer(payload);
-      console.log(response);
+      // console.log("Selected Group:", group);
 
-      this.messages.push({
+      this.currentGroupId = group.group_id;
+      // console.log("Updated currentGroupId:", this.currentGroupId);
+
+      try {
+        this.groupDetails = await fetchGroupDetails(this.currentGroupId);
+        this.messages = this.groupDetails.messages || [];
+        // console.log("Group details fetched:", this.groupDetails);
+
+        // this.connectWebSocket();
+      } catch (error) {
+        console.error("Failed to fetch group details:", error);
+        this.groupDetails = null;
+        this.messages = [];
+      }
+    },
+
+    async sendMessage(content) {
+      if (!content || !content.trim()) {
+        console.error("Cannot send empty message.");
+        return;
+      }
+
+      console.log("Current User ID:", this.currentUserId);
+      console.log("Current Group ID:", this.currentGroupId);
+
+      if (!this.currentUserId || !this.currentGroupId) {
+        console.error("User ID or Group ID is missing.");
+        return;
+      }
+
+      const payload = {
         user_id: this.currentUserId,
         group_id: this.currentGroupId,
-        content: content,
+        content: content.trim(),
         message_type: "text",
-        created_at: new Date().toISOString(),
-      });
-    } catch (error) {
-      console.error("Failed to send message:", error);
-    }
-  },
-  toggleSettings() {
-      this.isSettingsOpen = !this.isSettingsOpen;
-  },
-  async refresh_list_group_and_chat_area() {
-    console.log("fetchListGroups triggered");
+      };
 
-    // empty chat group message
-    this.groupDetails = null;
-    this.isSettingsOpen = false;
-    
-    try {
-      const response = await fetchListGroups(this.currentUserId);
-      if (response) {
-        console.log("List of groups fetched:", response.list_gr);
-        this.listGroup = response.list_gr;
-      } else {
-        console.error("Failed to fetch list of groups:", response.error);
+      console.log("Payload:", payload);
+
+      try {
+        const response = await sendMessageToServer(payload);
+        console.log("Message sent successfully:", response);
+
+        // Update the local messages list
+        this.messages.push({
+          ...payload,
+          created_at: new Date().toISOString(),
+        });
+      } catch (error) {
+        console.error("Failed to send message:", error);
       }
-    } catch (error) {
-      console.error("Error fetching list of groups:", error.message);
-    }
-  }
+    },
 
+    toggleSettings() {
+      this.isSettingsOpen = !this.isSettingsOpen;
+    },
+
+    async refresh_list_group_and_chat_area() {
+      console.log("fetchListGroups triggered");
+
+      this.groupDetails = null;
+      this.isSettingsOpen = false;
+
+      try {
+        const response = await fetchListGroups(this.currentUserId);
+        if (response && response.list_gr) {
+          console.log("List of groups fetched:", response.list_gr);
+          this.listGroup = response.list_gr;
+        } else {
+          console.error("Failed to fetch list of groups:", response?.error || "Unknown error.");
+          this.handleNoGroups();
+        }
+      } catch (error) {
+        console.error("Error fetching list of groups:", error.message);
+        this.handleNoGroups();
+      }
+    },
   },
 
   async created() {

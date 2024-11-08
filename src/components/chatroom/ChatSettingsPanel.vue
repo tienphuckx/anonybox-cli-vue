@@ -89,8 +89,32 @@
         <div v-if="groupInfo.total_waiting_member > 0" class="border-t pt-4 space-y-2">
           <h4 class="text-lg font-semibold">Waiting Members</h4>
           <ul class="list-disc pl-6">
-            <li v-for="member in groupInfo.list_waiting_member" :key="member.user_id">
-              {{ member.username }}
+            <li v-for="member in groupInfo.list_waiting_member" 
+            :key="member.user_id"
+            class="grid grid-cols-2 items-center gap-4">
+              
+              <span class="">{{ member.username }}</span>
+
+              <!--(Only visible if the user is the group owner and not 'You') -->
+              <span
+                v-if="isGroupOwner && member.user_id !== groupInfo.owner_id"
+                class="flex justify-end"
+              >
+                <button
+                  @click="confirmAcceptMember(member.user_id, member.username)"
+                  class="text-red-500"
+                  title="Accept Member"
+                >
+                  Accept
+                </button>
+                <button
+                  @click="confirmDeclineMember(member.user_id, member.username)"
+                  class="text-yellow-500 ml-6"
+                  title="Decline Member"
+                >
+                  Decline
+                </button>
+              </span>
             </li>
           </ul>
         </div>
@@ -195,6 +219,12 @@
       await this.fetchGroupDetails();
     },
     methods: {
+      confirmAcceptMember(memberId, memberName){
+        console.log("Accept Member: " + memberName);
+      },
+      confirmDeclineMember(memberId, memberName){
+        console.log("Decline Member: " + memberName);
+      },
         getProgress(utcTime, createdAt) {
             if (!utcTime || !createdAt) return 0;
 
