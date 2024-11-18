@@ -69,12 +69,22 @@ export async function fetchMessages(contactId) {
 }
 
 
-export async function fetchGroupDetails(groupId) {
+export async function fetchGroupDetails(groupId, xUserCode) {
     try {
         if(!groupId){
-            groupId = 13; 
+            groupId = 13;  //TODO what is this?
         }
-      const response = await fetch(`${API_BASE_URL}/group-detail/${groupId}`);
+
+        const headers = {
+          'x-user-code': xUserCode,
+          'Content-Type': 'application/json',
+        };
+
+        const response = await fetch(`${API_BASE_URL}/group-detail/${groupId}`, {
+          method: 'GET',
+          headers: headers,
+        });
+
       if (!response.ok) {
         throw new Error(`Error fetching group details: ${response.statusText}`);
       }

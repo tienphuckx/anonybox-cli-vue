@@ -163,9 +163,10 @@ export default {
 
       this.currentGroupId = group.group_id;
       // console.log("Updated currentGroupId:", this.currentGroupId);
+      const xUserCode = localStorage.getItem("x-user-code");
 
       try {
-        this.groupDetails = await fetchGroupDetails(this.currentGroupId);
+        this.groupDetails = await fetchGroupDetails(this.currentGroupId, xUserCode);
         this.messages = this.groupDetails.messages || [];
         // console.log("Group details fetched:", this.groupDetails);
 
